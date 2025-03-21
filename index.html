@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Báo Cáo</title>
+    <style>
+        :root {
+            --primary-color: #3aa6b4;
+            --secondary-color: #e4e6eb;
+            --background-color: #f0f2f5;
+            --text-color: #262626;
+            --border-color: #dddfe2;
+            --button-hover: #7232a8;
+            --error-color: #fa3e3e;
+            --success-color: #42b72a;
+            --gradient-1: #833AB4;
+            --gradient-2: #FD1D1D;
+            --gradient-3: #FCB045;
+            --input-bg: #EFEFEF;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: 20px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 26px;
+            margin-right: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        
+        h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .form-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background-color: var(--input-bg);
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(131, 58, 180, 0.2);
+        }
+        
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: var(--text-color);
+            background-image: none;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #d8d8d8;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .buttons button {
+            flex: 1;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 24px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+        
+        .report-content {
+            white-space: pre-line;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .success {
+            color: var(--success-color);
+            font-size: 14px;
+            margin-top: 5px;
+            text-align: center;
+            display: none;
+            padding: 8px;
+            background-color: rgba(66, 183, 42, 0.1);
+            border-radius: 6px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background-color: var(--input-bg);
+            cursor: pointer;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+        
+        .tab:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+        
+        .tab:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .tab.active {
+            background: var(--primary-color);            
+            color: white;
+            border-color: transparent;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .form-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+        }
+        .footer {
+            text-align: center;        /* Căn giữa dòng chữ */
+            padding: 20px 0;           /* Thêm khoảng cách trên và dưới */
+            margin-top: 20px;          /* Tạo khoảng cách với nội dung phía trên */
+            border-top: 1px solid #ccc; /* Thêm đường viền trên để tách biệt */
+            color: #666;               /* Màu chữ nhạt để không quá nổi bật */
+            font-size: 14px;           /* Kích thước chữ vừa phải */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">BC</div>
+            <h1>HỆ THỐNG BÁO CÁO</h1>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="tab1">Báo Cáo Đầu Buổi Dạy</div>
+            <div class="tab" data-tab="tab2">Báo Cáo Chuyên Môn</div>
+            <div class="tab" data-tab="tab3">Báo Cáo Cuối Buổi Dạy</div>
+        </div>
+        
+        <!-- Tab 1: Báo Cáo Đầu Buổi Dạy -->
+        <div id="tab1" class="tab-content active">
+            <form id="reportForm1">
+                <div class="section">
+                    <div class="section-title">Thông tin chung</div>
+                    <div class="form-layout">
+                        <div class="form-group">
+                            <label for="teacherName1">Tên Giáo Viên:</label>
+                            <input type="text" id="teacherName1" name="teacherName" placeholder="Nhập tên giáo viên">
+                        </div>
+                        <div class="form-group">
+                            <label for="assistantName1">Tên Trợ Giảng:</label>
+                            <input type="text" id="assistantName1" name="assistantName" placeholder="Nhập tên giáo viên trợ giảng">
+                        </div>
+                        <div class="form-group">
+                            <label for="roomNumber1">Phòng Máy:</label>
+                            <input type="text" id="roomNumber1" name="roomNumber" placeholder="Nhập tên phòng máy">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">Thông tin thiết bị</div>
+                    <div class="form-layout">
+                        <div class="form-group">
+                            <label for="totalComputers1">Tổng số máy:</label>
+                            <input type="text" id="totalComputers1" name="totalComputers" placeholder="Nhập tổng số lượng máy">
+                        </div>
+                        <div class="form-group">
+                            <label for="errorComputers1">Tổng số máy bị lỗi:</label>
+                            <input type="text" id="errorComputers1" name="errorComputers" placeholder="Nhập tổng số lượng máy lỗi">
+                        </div>
+                        <div class="form-group">
+                            <label for="missingComputers1">Số máy còn thiếu cho HS:</label>
+                            <input type="text" id="missingComputers1" name="missingComputers" placeholder="Nhập số máy còn thiếu cho học sinh">
+                        </div>
+                        <div class="form-group">
+                            <label for="netsupport1">Tình trạng Netsupport:</label>
+                            <select id="netsupport1" name="netsupport">
+                                <option value="" disabled selected>-- Chọn tình trạng --</option>
+                                <option value="Ổn định">Ổn định</option>
+                                <option value="Thiếu ổn định">Thiếu ổn định</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="soundSystem1">Tình trạng Loa, Âm ly:</label>
+                            <input type="text" id="soundSystem1" name="soundSystem" placeholder="Nhập tình trạng loa, âm ly">
+                        </div>
+                        <div class="form-group">
+                            <label for="airConditioner1">Tình trạng máy lạnh, máy quạt:</label>
+                            <input type="text" id="airConditioner1" name="airConditioner" placeholder="Nhập tình trạng máy lạnh, máy quạt">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button type="button" id="exportBtn1" class="btn">Xuất báo cáo</button>
+                    <button type="reset" class="btn btn-secondary">Làm mới</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Tab 2: Báo Cáo Chuyên Môn -->
+        <div id="tab2" class="tab-content">
+            <form id="reportForm2">
+                <div class="section">
+                    <div class="section-title">Thông tin chung</div>
+                    <div class="form-layout">
+                        <div class="form-group">
+                            <label for="teacherName2">Tên Giáo Viên:</label>
+                            <input type="text" id="teacherName2" placeholder="Nhập tên giáo viên">
+                        </div>
+                        <div class="form-group">
+                            <label for="className">Lớp:</label>
+                            <input type="text" id="className" placeholder="Nhập lớp">
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Môn:</label>
+                            <select id="subject">
+                                <option value="" disabled selected>Chọn môn học</option>
+                                <option value="GS4 Spark KA">GS4 Spark KA</option>
+                                <option value="GS4 Spark LO">GS4 Spark LO</option>
+                                <option value="GS6 Spark Level 1">GS6 Spark Level 1</option>
+                                <option value="GS6 Spark Level 2">GS6 Spark Level 2</option>
+                                <option value="GS6 Spark Level 3">GS6 Spark Level 3</option>
+                                <option value="GS6 Level 1">GS6 Level 1</option>
+                                <option value="GS6 Level 2">GS6 Level 2</option>
+                                <option value="GS6 Level 3">GS6 Level 3</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="resource">Tài liệu dạy:</label>
+                            <input type="text" id="resource" placeholder="Nhập tài liệu">
+                        </div>
+                        <div class="form-group">
+                            <label for="content">Nội dung dạy:</label>
+                            <input type="text" id="content" placeholder="Nhập nội dung">
+                        </div>
+                        <div class="form-group">
+                            <label for="completedLessons">Số tiết đã dạy:</label>
+                            <input type="number" id="completedLessons" placeholder="Nhập số tiết đã dạy">
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewCount">Số lần hoàn thành bài tổng hợp:</label>
+                            <input type="number" id="reviewCount" placeholder="Nhập số lần">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">Kết quả học tập</div>
+                    <div class="form-layout">
+                        <div class="form-group">
+                            <label for="flash_gmt1">Flash GMT 1 (%):</label>
+                            <input type="number" id="flash_gmt1" placeholder="0" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="flash_gmt2">Flash GMT 2 (%):</label>
+                            <input type="number" id="flash_gmt2" placeholder="0" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="flash_ot1">Flash OT 1 (%):</label>
+                            <input type="number" id="flash_ot1" placeholder="0" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="flash_ot2">Flash OT 2 (%):</label>
+                            <input type="number" id="flash_ot2" placeholder="0" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="flash_ot3">Flash OT 3 (%):</label>
+                            <input type="number" id="flash_ot3" placeholder="0" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="flash_ot4">Flash OT 4 (%):</label>
+                            <input type="number" id="flash_ot4" placeholder="0" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="flash_ot5">Flash OT 5 (%):</label>
+                            <input type="number" id="flash_ot5" placeholder="0" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="gmetrix_gmt1">Gmetrix GMT 1 (%):</label>
+                            <input type="number" id="gmetrix_gmt1" placeholder="0" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="gmetrix_gmt2">Gmetrix GMT 2 (%):</label>
+                            <input type="number" id="gmetrix_gmt2" placeholder="0" min="0" max="100">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button type="button" id="exportBtn2" class="btn">Xuất báo cáo</button>
+                    <button type="reset" class="btn btn-secondary">Làm mới</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Tab 3: Báo Cáo Cuối Buổi Dạy -->
+        <div id="tab3" class="tab-content">
+            <form id="reportForm3">
+                <div class="section">
+                    <div class="section-title">Thông tin chung</div>
+                    <div class="form-layout">
+                        <div class="form-group">
+                            <label for="teacherName3">Tên Giáo Viên:</label>
+                            <input type="text" id="teacherName3" name="teacherName" placeholder="Nhập tên giáo viên">
+                        </div>
+                        <div class="form-group">
+                            <label for="assistantName3">Tên Trợ Giảng:</label>
+                            <input type="text" id="assistantName3" name="assistantName" placeholder="Nhập tên giáo viên trợ giảng">
+                        </div>
+                        <div class="form-group">
+                            <label for="roomNumber3">Phòng Máy:</label>
+                            <input type="text" id="roomNumber3" name="roomNumber" placeholder="Nhập tên phòng máy">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Thông tin thiết bị và học sinh</div>
+                    <div class="form-layout">
+                        <div class="form-group">
+                            <label for="totalComputers3">Tổng số máy:</label>
+                            <input type="text" id="totalComputers3" name="totalComputers" placeholder="Nhập tổng số lượng máy">
+                        </div>
+                        <div class="form-group">
+                            <label for="studentCount">Số lượng HS:</label>
+                            <input type="text" id="studentCount" name="studentCount" placeholder="Nhập tổng số lượng học sinh">
+                        </div>
+                        <div class="form-group">
+                            <label for="materialPercentage">Tỷ lệ HS có tài liệu (%):</label>
+                            <input type="number" id="materialPercentage" name="materialPercentage" min="0" max="100" placeholder="Nhập tỷ lệ HS có tài liệu">
+                        </div>
+                        <div class="form-group">
+                            <label for="errorComputers3">Tổng số máy bị lỗi:</label>
+                            <input type="text" id="errorComputers3" name="errorComputers" placeholder="Nhập tổng số lượng máy lỗi">
+                        </div>
+                        <div class="form-group">
+                            <label for="missingComputers3">Số máy còn thiếu cho HS:</label>
+                            <input type="text" id="missingComputers3" name="missingComputers" placeholder="Nhập số lượng máy thiếu">
+                        </div>
+                        <div class="form-group">
+                            <label for="netsupport3">Tình trạng Netsupport:</label>
+                            <select id="netsupport3" name="netsupport">
+                                <option value="" disabled selected>-- Chọn tình trạng --</option>
+                                <option value="Ổn định">Ổn định</option>
+                                <option value="Thiếu ổn định">Thiếu ổn định</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="soundSystem3">Tình trạng Loa, Âm ly:</label>
+                            <input type="text" id="soundSystem3" name="soundSystem" placeholder="Nhập tình trạng loa, âm ly">
+                        </div>
+                        <div class="form-group">
+                            <label for="airConditioner3">Tình trạng máy lạnh, máy quạt:</label>
+                            <input type="text" id="airConditioner3" name="airConditioner" placeholder="Nhập tình trạng máy lạnh, máy quạt">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Kết thúc buổi dạy</div>
+                    <div class="form-layout">
+                        <div class="form-group">
+                            <label for="devicesTurnedOff">Đã tắt các thiết bị điện chưa:</label>
+                            <select id="devicesTurnedOff" name="devicesTurnedOff">
+                                <option value="">-- Chọn --</option>
+                                <option value="đã tắt">Đã tắt</option>
+                                <option value="chưa">Chưa</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="chairsArranged">HS sắp xếp ghế ngồi gọn gàng:</label>
+                            <select id="chairsArranged" name="chairsArranged">
+                                <option value="">-- Chọn --</option>
+                                <option value="gọn gàng">Gọn gàng</option>
+                                <option value="chưa gọn gàng">Chưa gọn gàng</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="roomCleaned">HS vệ sinh phòng máy:</label>
+                            <select id="roomCleaned" name="roomCleaned">
+                                <option value="">-- Chọn --</option>
+                                <option value="sạch sẽ">Sạch sẽ</option>
+                                <option value="chưa sạch sẽ">Chưa sạch sẽ</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="compliance">Tuân thủ nội quy của HS:</label>
+                            <select id="compliance" name="compliance">
+                                <option value="">-- Chọn --</option>
+                                <option value="tốt">Tốt</option>
+                                <option value="không tốt">Không tốt</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="violations">Danh sách vi phạm:</label>
+                            <textarea id="violations" name="violations" rows="3" placeholder="Nhập danh sách vi phạm"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button type="button" id="exportBtn3" class="btn">Xuất báo cáo</button>
+                    <button type="reset" class="btn btn-secondary">Làm mới</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal cho Tab 1 -->
+    <div id="reportModal1" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Báo Cáo Đầu Buổi Dạy</h2>
+                <button class="close-button" id="closeModal1">&times;</button>
+            </div>
+            <div id="reportOutputModal1" class="report-content"></div>
+            <div id="copySuccessModal1" class="success">Đã sao chép báo cáo!</div>
+            <button id="copyReport1" class="btn">Sao chép báo cáo</button>
+        </div>
+    </div>
+
+    <!-- Modal cho Tab 2 -->
+    <div id="reportModal2" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Báo Cáo Chuyên Môn</h2>
+                <button class="close-button" id="closeModal2">&times;</button>
+            </div>
+            <div id="reportOutputModal2" class="report-content"></div>
+            <div id="copySuccessModal2" class="success">Đã sao chép báo cáo!</div>
+            <button id="copyReport2" class="btn">Sao chép báo cáo</button>
+        </div>
+    </div>
+
+    <!-- Modal cho Tab 3 -->
+    <div id="reportModal3" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Báo Cáo Cuối Buổi Dạy</h2>
+                <button class="close-button" id="closeModal3">&times;</button>
+            </div>
+            <div id="reportOutputModal3" class="report-content"></div>
+            <div id="copySuccessModal3" class="success">Đã sao chép báo cáo!</div>
+            <button id="copyReport3" class="btn">Sao chép báo cáo</button>
+        </div>
+    </div>
+
+    <script>
+       document.addEventListener('DOMContentLoaded', function() {
+    // Chuyển đổi tab
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            this.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    // Hàm hỗ trợ sao chép
+    function copyToClipboard(text, successElement) {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+                showSuccess(successElement);
+            }).catch(() => {
+                fallbackCopy(text, successElement);
+            });
+        } else {
+            fallbackCopy(text, successElement);
+        }
+    }
+
+    function fallbackCopy(text, successElement) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                showSuccess(successElement);
+            } else {
+                console.error('Không thể sao chép bằng phương pháp dự phòng');
+            }
+        } catch (err) {
+            console.error('Lỗi khi sao chép bằng phương pháp dự phòng', err);
+        }
+        document.body.removeChild(textarea);
+    }
+
+    function showSuccess(successElement) {
+        successElement.style.display = 'block';
+        setTimeout(() => {
+            successElement.style.display = 'none';
+        }, 3000);
+    }
+
+    // Tab 1: Báo Cáo Đầu Buổi Dạy
+    const exportBtn1 = document.getElementById('exportBtn1');
+    const modal1 = document.getElementById('reportModal1');
+    const reportOutputModal1 = document.getElementById('reportOutputModal1');
+    const closeModal1 = document.getElementById('closeModal1');
+    const copyBtn1 = document.getElementById('copyReport1');
+    const copySuccessModal1 = document.getElementById('copySuccessModal1');
+
+    exportBtn1.addEventListener('click', function() {
+        const teacherName = document.getElementById('teacherName1').value || '';
+        const assistantName = document.getElementById('assistantName1').value || '';
+        const roomNumber = document.getElementById('roomNumber1').value || '';
+        const totalComputers = document.getElementById('totalComputers1').value || '';
+        const errorComputers = document.getElementById('errorComputers1').value || '';
+        const missingComputers = document.getElementById('missingComputers1').value || '';
+        const netsupport = document.getElementById('netsupport1').value || '';
+        const soundSystem = document.getElementById('soundSystem1').value || '';
+        const airConditioner = document.getElementById('airConditioner1').value || '';
+
+        const report = `BÁO CÁO ĐẦU BUỔI DẠY
+- Tên Giáo Viên: ${teacherName}
+- Tên Trợ Giảng: ${assistantName}
+- Phòng Máy: ${roomNumber}
+- Tổng số máy: ${totalComputers}
+- Tổng số máy bị lỗi: ${errorComputers}
+- Số máy còn thiếu cho HS: ${missingComputers}
+- Tình trạng Netsupport: ${netsupport}
+- Tình trạng Loa, Âm ly: ${soundSystem}
+- Tình trạng máy lạnh, máy quạt: ${airConditioner}`;
+
+        reportOutputModal1.textContent = report;
+        modal1.style.display = 'flex';
+        copySuccessModal1.style.display = 'none';
+    });
+
+    closeModal1.addEventListener('click', function() {
+        modal1.style.display = 'none';
+    });
+
+    modal1.addEventListener('click', function(event) {
+        if (event.target === modal1) {
+            modal1.style.display = 'none';
+        }
+    });
+
+    copyBtn1.addEventListener('click', function() {
+        const text = reportOutputModal1.textContent;
+        copyToClipboard(text, copySuccessModal1);
+    });
+
+    // Tab 2: Báo Cáo Chuyên Môn
+    const exportBtn2 = document.getElementById('exportBtn2');
+    const modal2 = document.getElementById('reportModal2');
+    const reportOutputModal2 = document.getElementById('reportOutputModal2');
+    const closeModal2 = document.getElementById('closeModal2');
+    const copyBtn2 = document.getElementById('copyReport2');
+    const copySuccessModal2 = document.getElementById('copySuccessModal2');
+
+    exportBtn2.addEventListener('click', function() {
+        const teacherName = document.getElementById('teacherName2').value || '';
+        const className = document.getElementById('className').value || '';
+        const subject = document.getElementById('subject').value || '';
+        const resource = document.getElementById('resource').value || '';
+        const content = document.getElementById('content').value || '';
+        const completedLessons = document.getElementById('completedLessons').value || '';
+        const reviewCount = document.getElementById('reviewCount').value || '';
+        const flash_gmt1 = document.getElementById('flash_gmt1').value || '0';
+        const flash_gmt2 = document.getElementById('flash_gmt2').value || '0';
+        const flash_ot1 = document.getElementById('flash_ot1').value || '0';
+        const flash_ot2 = document.getElementById('flash_ot2').value || '0';
+        const flash_ot3 = document.getElementById('flash_ot3').value || '0';
+        const flash_ot4 = document.getElementById('flash_ot4').value || '0';
+        const flash_ot5 = document.getElementById('flash_ot5').value || '0';
+        const gmetrix_gmt1 = document.getElementById('gmetrix_gmt1').value || '0';
+        const gmetrix_gmt2 = document.getElementById('gmetrix_gmt2').value || '0';
+
+        const report = `BÁO CÁO CHUYÊN MÔN
+- Tên Giáo Viên: ${teacherName}
+- Lớp: ${className}
+- Môn: ${subject}
+- Tài liệu dạy: ${resource}
+- Nội dung dạy: ${content}
+- Số tiết đã dạy: ${completedLessons}
+- Số lần hoàn thành bài tổng hợp: ${reviewCount}
+- Tỷ lệ kết quả Flash: GMT 1 (${flash_gmt1}%) GMT 2 (${flash_gmt2}%) OT 1 (${flash_ot1}%) OT 2 (${flash_ot2}%) OT 3 (${flash_ot3}%) OT 4 (${flash_ot4}%) OT 5 (${flash_ot5}%)
+- Tỷ lệ kết quả điểm Gmetrix: GMT 1 (${gmetrix_gmt1}%) GMT 2 (${gmetrix_gmt2}%)`;
+
+        reportOutputModal2.textContent = report;
+        modal2.style.display = 'flex';
+        copySuccessModal2.style.display = 'none';
+    });
+
+    closeModal2.addEventListener('click', function() {
+        modal2.style.display = 'none';
+    });
+
+    modal2.addEventListener('click', function(event) {
+        if (event.target === modal2) {
+            modal2.style.display = 'none';
+        }
+    });
+
+    copyBtn2.addEventListener('click', function() {
+        const text = reportOutputModal2.textContent;
+        copyToClipboard(text, copySuccessModal2);
+    });
+
+    // Tab 3: Báo Cáo Cuối Buổi Dạy
+    const exportBtn3 = document.getElementById('exportBtn3');
+    const modal3 = document.getElementById('reportModal3');
+    const reportOutputModal3 = document.getElementById('reportOutputModal3');
+    const closeModal3 = document.getElementById('closeModal3');
+    const copyBtn3 = document.getElementById('copyReport3');
+    const copySuccessModal3 = document.getElementById('copySuccessModal3');
+
+    exportBtn3.addEventListener('click', function() {
+        const teacherName = document.getElementById('teacherName3').value || '';
+        const assistantName = document.getElementById('assistantName3').value || '';
+        const roomNumber = document.getElementById('roomNumber3').value || '';
+        const totalComputers = document.getElementById('totalComputers3').value || '';
+        const studentCount = document.getElementById('studentCount').value || '';
+        const materialPercentage = document.getElementById('materialPercentage').value || '0';
+        const errorComputers = document.getElementById('errorComputers3').value || '';
+        const missingComputers = document.getElementById('missingComputers3').value || '';
+        const netsupport = document.getElementById('netsupport3').value || '';
+        const soundSystem = document.getElementById('soundSystem3').value || '';
+        const airConditioner = document.getElementById('airConditioner3').value || '';
+        const devicesTurnedOff = document.getElementById('devicesTurnedOff').value || '';
+        const chairsArranged = document.getElementById('chairsArranged').value || '';
+        const roomCleaned = document.getElementById('roomCleaned').value || '';
+        const compliance = document.getElementById('compliance').value || '';
+        const violations = document.getElementById('violations').value || '';
+
+        const report = `BÁO CÁO CUỐI BUỔI DẠY
+- Tên Giáo Viên: ${teacherName}
+- Tên Trợ Giảng: ${assistantName}
+- Phòng Máy: ${roomNumber}
+- Tổng số máy: ${totalComputers}
+- Số lượng HS: ${studentCount}
+- Tỷ lệ học sinh có tài liệu: ${materialPercentage}%
+- Tổng số máy bị lỗi: ${errorComputers}
+- Số máy còn thiếu cho HS: ${missingComputers}
+- Tình trạng Netsupport: ${netsupport}
+- Tình trạng Loa, Âm ly: ${soundSystem}
+- Tình trạng máy lạnh, máy quạt: ${airConditioner}
+- Đã tắt các thiết bị điện chưa: ${devicesTurnedOff}
+- HS sắp xếp ghế ngồi gọn gàng: ${chairsArranged}
+- HS vệ sinh phòng máy: ${roomCleaned}
+- Tuân thủ nội quy của HS: ${compliance}
+- Danh sách vi phạm: ${violations}`;
+
+        reportOutputModal3.textContent = report;
+        modal3.style.display = 'flex';
+        copySuccessModal3.style.display = 'none';
+    });
+
+    closeModal3.addEventListener('click', function() {
+        modal3.style.display = 'none';
+    });
+
+    modal3.addEventListener('click', function(event) {
+        if (event.target === modal3) {
+            modal3.style.display = 'none';
+        }
+    });
+
+    copyBtn3.addEventListener('click', function() {
+        const text = reportOutputModal3.textContent;
+        copyToClipboard(text, copySuccessModal3);
+    });
+});
+    </script>
+<footer class="footer">
+    <p>Design by: Nguyễn Bá Duy</p>
+</footer>   
+</body>
+</html>
