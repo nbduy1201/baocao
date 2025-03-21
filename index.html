@@ -616,233 +616,296 @@
     </div>
 
     <script>
-       document.addEventListener('DOMContentLoaded', function() {
-    // Chuyển đổi tab
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-    
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            const tabId = this.getAttribute('data-tab');
-            
-            tabs.forEach(t => t.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
-            
-            this.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-        });
-    });
-
-    // Hàm hỗ trợ sao chép
-    function copyToClipboard(text, successElement) {
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(text).then(() => {
-                showSuccess(successElement);
-            }).catch(() => {
-                fallbackCopy(text, successElement);
-            });
-        } else {
-            fallbackCopy(text, successElement);
-        }
-    }
-
-    function fallbackCopy(text, successElement) {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-            const successful = document.execCommand('copy');
-            if (successful) {
-                showSuccess(successElement);
-            } else {
-                console.error('Không thể sao chép bằng phương pháp dự phòng');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hàm hỗ trợ cookie
+            function setCookie(name, value, days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                const expires = "expires=" + date.toUTCString();
+                document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/";
             }
-        } catch (err) {
-            console.error('Lỗi khi sao chép bằng phương pháp dự phòng', err);
-        }
-        document.body.removeChild(textarea);
-    }
-
-    function showSuccess(successElement) {
-        successElement.style.display = 'block';
-        setTimeout(() => {
-            successElement.style.display = 'none';
-        }, 3000);
-    }
-
-    // Tab 1: Báo Cáo Đầu Buổi Dạy
-    const exportBtn1 = document.getElementById('exportBtn1');
-    const modal1 = document.getElementById('reportModal1');
-    const reportOutputModal1 = document.getElementById('reportOutputModal1');
-    const closeModal1 = document.getElementById('closeModal1');
-    const copyBtn1 = document.getElementById('copyReport1');
-    const copySuccessModal1 = document.getElementById('copySuccessModal1');
-
-    exportBtn1.addEventListener('click', function() {
-        const teacherName = document.getElementById('teacherName1').value || '';
-        const assistantName = document.getElementById('assistantName1').value || '';
-        const roomNumber = document.getElementById('roomNumber1').value || '';
-        const totalComputers = document.getElementById('totalComputers1').value || '';
-        const errorComputers = document.getElementById('errorComputers1').value || '';
-        const missingComputers = document.getElementById('missingComputers1').value || '';
-        const netsupport = document.getElementById('netsupport1').value || '';
-        const soundSystem = document.getElementById('soundSystem1').value || '';
-        const airConditioner = document.getElementById('airConditioner1').value || '';
-
-        const report = `BÁO CÁO ĐẦU BUỔI DẠY
-- Tên Giáo Viên: ${teacherName}
-- Tên Trợ Giảng: ${assistantName}
-- Phòng Máy: ${roomNumber}
-- Tổng số máy: ${totalComputers}
-- Tổng số máy bị lỗi: ${errorComputers}
-- Số máy còn thiếu cho HS: ${missingComputers}
-- Tình trạng Netsupport: ${netsupport}
-- Tình trạng Loa, Âm ly: ${soundSystem}
-- Tình trạng máy lạnh, máy quạt: ${airConditioner}`;
-
-        reportOutputModal1.textContent = report;
-        modal1.style.display = 'flex';
-        copySuccessModal1.style.display = 'none';
-    });
-
-    closeModal1.addEventListener('click', function() {
-        modal1.style.display = 'none';
-    });
-
-    modal1.addEventListener('click', function(event) {
-        if (event.target === modal1) {
-            modal1.style.display = 'none';
-        }
-    });
-
-    copyBtn1.addEventListener('click', function() {
-        const text = reportOutputModal1.textContent;
-        copyToClipboard(text, copySuccessModal1);
-    });
-
-    // Tab 2: Báo Cáo Chuyên Môn
-    const exportBtn2 = document.getElementById('exportBtn2');
-    const modal2 = document.getElementById('reportModal2');
-    const reportOutputModal2 = document.getElementById('reportOutputModal2');
-    const closeModal2 = document.getElementById('closeModal2');
-    const copyBtn2 = document.getElementById('copyReport2');
-    const copySuccessModal2 = document.getElementById('copySuccessModal2');
-
-    exportBtn2.addEventListener('click', function() {
-        const teacherName = document.getElementById('teacherName2').value || '';
-        const className = document.getElementById('className').value || '';
-        const subject = document.getElementById('subject').value || '';
-        const resource = document.getElementById('resource').value || '';
-        const content = document.getElementById('content').value || '';
-        const completedLessons = document.getElementById('completedLessons').value || '';
-        const reviewCount = document.getElementById('reviewCount').value || '';
-        const flash_gmt1 = document.getElementById('flash_gmt1').value || '0';
-        const flash_gmt2 = document.getElementById('flash_gmt2').value || '0';
-        const flash_ot1 = document.getElementById('flash_ot1').value || '0';
-        const flash_ot2 = document.getElementById('flash_ot2').value || '0';
-        const flash_ot3 = document.getElementById('flash_ot3').value || '0';
-        const flash_ot4 = document.getElementById('flash_ot4').value || '0';
-        const flash_ot5 = document.getElementById('flash_ot5').value || '0';
-        const gmetrix_gmt1 = document.getElementById('gmetrix_gmt1').value || '0';
-        const gmetrix_gmt2 = document.getElementById('gmetrix_gmt2').value || '0';
-
-        const report = `BÁO CÁO CHUYÊN MÔN
-- Tên Giáo Viên: ${teacherName}
-- Lớp: ${className}
-- Môn: ${subject}
-- Tài liệu dạy: ${resource}
-- Nội dung dạy: ${content}
-- Số tiết đã dạy: ${completedLessons}
-- Số lần hoàn thành bài tổng hợp: ${reviewCount}
-- Tỷ lệ kết quả Flash: GMT 1 (${flash_gmt1}%) GMT 2 (${flash_gmt2}%) OT 1 (${flash_ot1}%) OT 2 (${flash_ot2}%) OT 3 (${flash_ot3}%) OT 4 (${flash_ot4}%) OT 5 (${flash_ot5}%)
-- Tỷ lệ kết quả điểm Gmetrix: GMT 1 (${gmetrix_gmt1}%) GMT 2 (${gmetrix_gmt2}%)`;
-
-        reportOutputModal2.textContent = report;
-        modal2.style.display = 'flex';
-        copySuccessModal2.style.display = 'none';
-    });
-
-    closeModal2.addEventListener('click', function() {
-        modal2.style.display = 'none';
-    });
-
-    modal2.addEventListener('click', function(event) {
-        if (event.target === modal2) {
-            modal2.style.display = 'none';
-        }
-    });
-
-    copyBtn2.addEventListener('click', function() {
-        const text = reportOutputModal2.textContent;
-        copyToClipboard(text, copySuccessModal2);
-    });
-
-    // Tab 3: Báo Cáo Cuối Buổi Dạy
-    const exportBtn3 = document.getElementById('exportBtn3');
-    const modal3 = document.getElementById('reportModal3');
-    const reportOutputModal3 = document.getElementById('reportOutputModal3');
-    const closeModal3 = document.getElementById('closeModal3');
-    const copyBtn3 = document.getElementById('copyReport3');
-    const copySuccessModal3 = document.getElementById('copySuccessModal3');
-
-    exportBtn3.addEventListener('click', function() {
-        const teacherName = document.getElementById('teacherName3').value || '';
-        const assistantName = document.getElementById('assistantName3').value || '';
-        const roomNumber = document.getElementById('roomNumber3').value || '';
-        const totalComputers = document.getElementById('totalComputers3').value || '';
-        const studentCount = document.getElementById('studentCount').value || '';
-        const materialPercentage = document.getElementById('materialPercentage').value || '0';
-        const errorComputers = document.getElementById('errorComputers3').value || '';
-        const missingComputers = document.getElementById('missingComputers3').value || '';
-        const netsupport = document.getElementById('netsupport3').value || '';
-        const soundSystem = document.getElementById('soundSystem3').value || '';
-        const airConditioner = document.getElementById('airConditioner3').value || '';
-        const devicesTurnedOff = document.getElementById('devicesTurnedOff').value || '';
-        const chairsArranged = document.getElementById('chairsArranged').value || '';
-        const roomCleaned = document.getElementById('roomCleaned').value || '';
-        const compliance = document.getElementById('compliance').value || '';
-        const violations = document.getElementById('violations').value || '';
-
-        const report = `BÁO CÁO CUỐI BUỔI DẠY
-- Tên Giáo Viên: ${teacherName}
-- Tên Trợ Giảng: ${assistantName}
-- Phòng Máy: ${roomNumber}
-- Tổng số máy: ${totalComputers}
-- Số lượng HS: ${studentCount}
-- Tỷ lệ học sinh có tài liệu: ${materialPercentage}%
-- Tổng số máy bị lỗi: ${errorComputers}
-- Số máy còn thiếu cho HS: ${missingComputers}
-- Tình trạng Netsupport: ${netsupport}
-- Tình trạng Loa, Âm ly: ${soundSystem}
-- Tình trạng máy lạnh, máy quạt: ${airConditioner}
-- Đã tắt các thiết bị điện chưa: ${devicesTurnedOff}
-- HS sắp xếp ghế ngồi gọn gàng: ${chairsArranged}
-- HS vệ sinh phòng máy: ${roomCleaned}
-- Tuân thủ nội quy của HS: ${compliance}
-- Danh sách vi phạm: ${violations}`;
-
-        reportOutputModal3.textContent = report;
-        modal3.style.display = 'flex';
-        copySuccessModal3.style.display = 'none';
-    });
-
-    closeModal3.addEventListener('click', function() {
-        modal3.style.display = 'none';
-    });
-
-    modal3.addEventListener('click', function(event) {
-        if (event.target === modal3) {
-            modal3.style.display = 'none';
-        }
-    });
-
-    copyBtn3.addEventListener('click', function() {
-        const text = reportOutputModal3.textContent;
-        copyToClipboard(text, copySuccessModal3);
-    });
-});
-    </script>
+        
+            function getCookie(name) {
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(';');
+                for(let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+                }
+                return null;
+            }
+        
+            // Chuyển đổi tab
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        
+            // Hàm sao chép
+            function copyToClipboard(text, successElement) {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        showSuccess(successElement);
+                    }).catch(() => {
+                        fallbackCopy(text, successElement);
+                    });
+                } else {
+                    fallbackCopy(text, successElement);
+                }
+            }
+        
+            function fallbackCopy(text, successElement) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showSuccess(successElement);
+                } catch (err) {
+                    console.error('Lỗi sao chép:', err);
+                }
+                document.body.removeChild(textarea);
+            }
+        
+            function showSuccess(successElement) {
+                successElement.style.display = 'block';
+                setTimeout(() => successElement.style.display = 'none', 3000);
+            }
+        
+            // Hàm tự động điền dữ liệu từ cookie
+            function autofillFromCookie(teacherNameInput, classNameInput, formId) {
+                const teacherName = teacherNameInput.value;
+                const className = classNameInput ? classNameInput.value : '';
+                const cookieKey = `${teacherName}_${className || 'noClass'}`;
+                const savedData = getCookie(cookieKey);
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    const inputs = document.getElementById(formId).querySelectorAll('input, select, textarea');
+                    inputs.forEach(input => {
+                        if (data[input.id]) {
+                            input.value = data[input.id];
+                        }
+                    });
+                }
+            }
+        
+            // Tab 1: Báo Cáo Đầu Buổi Dạy
+            const exportBtn1 = document.getElementById('exportBtn1');
+            const modal1 = document.getElementById('reportModal1');
+            const reportOutputModal1 = document.getElementById('reportOutputModal1');
+            const closeModal1 = document.getElementById('closeModal1');
+            const copyBtn1 = document.getElementById('copyReport1');
+            const copySuccessModal1 = document.getElementById('copySuccessModal1');
+            const teacherName1 = document.getElementById('teacherName1');
+        
+            teacherName1.addEventListener('input', () => autofillFromCookie(teacherName1, null, 'reportForm1'));
+        
+            exportBtn1.addEventListener('click', function() {
+                const teacherName = teacherName1.value || '';
+                const assistantName = document.getElementById('assistantName1').value || '';
+                const roomNumber = document.getElementById('roomNumber1').value || '';
+                const totalComputers = document.getElementById('totalComputers1').value || '';
+                const errorComputers = document.getElementById('errorComputers1').value || '';
+                const missingComputers = document.getElementById('missingComputers1').value || '';
+                const netsupport = document.getElementById('netsupport1').value || '';
+                const soundSystem = document.getElementById('soundSystem1').value || '';
+                const airConditioner = document.getElementById('airConditioner1').value || '';
+        
+                const report = `BÁO CÁO ĐẦU BUỔI DẠY
+        - Tên Giáo Viên: ${teacherName}
+        - Tên Trợ Giảng: ${assistantName}
+        - Phòng Máy: ${roomNumber}
+        - Tổng số máy: ${totalComputers}
+        - Tổng số máy bị lỗi: ${errorComputers}
+        - Số máy còn thiếu cho HS: ${missingComputers}
+        - Tình trạng Netsupport: ${netsupport}
+        - Tình trạng Loa, Âm ly: ${soundSystem}
+        - Tình trạng máy lạnh, máy quạt: ${airConditioner}`;
+        
+                reportOutputModal1.textContent = report;
+                modal1.style.display = 'flex';
+                copySuccessModal1.style.display = 'none';
+        
+                // Lưu vào cookie
+                const data = {
+                    teacherName1: teacherName,
+                    assistantName1: assistantName,
+                    roomNumber1: roomNumber,
+                    totalComputers1: totalComputers,
+                    errorComputers1: errorComputers,
+                    missingComputers1: missingComputers,
+                    netsupport1: netsupport,
+                    soundSystem1: soundSystem,
+                    airConditioner1: airConditioner
+                };
+                setCookie(teacherName, JSON.stringify(data), 30); // Lưu 30 ngày
+            });
+        
+            closeModal1.addEventListener('click', () => modal1.style.display = 'none');
+            modal1.addEventListener('click', (event) => { if (event.target === modal1) modal1.style.display = 'none'; });
+            copyBtn1.addEventListener('click', () => copyToClipboard(reportOutputModal1.textContent, copySuccessModal1));
+        
+            // Tab 2: Báo Cáo Chuyên Môn
+            const exportBtn2 = document.getElementById('exportBtn2');
+            const modal2 = document.getElementById('reportModal2');
+            const reportOutputModal2 = document.getElementById('reportOutputModal2');
+            const closeModal2 = document.getElementById('closeModal2');
+            const copyBtn2 = document.getElementById('copyReport2');
+            const copySuccessModal2 = document.getElementById('copySuccessModal2');
+            const teacherName2 = document.getElementById('teacherName2');
+            const className = document.getElementById('className');
+        
+            teacherName2.addEventListener('input', () => autofillFromCookie(teacherName2, className, 'reportForm2'));
+            className.addEventListener('input', () => autofillFromCookie(teacherName2, className, 'reportForm2'));
+        
+            exportBtn2.addEventListener('click', function() {
+                const teacherName = teacherName2.value || '';
+                const classNameVal = className.value || '';
+                const subject = document.getElementById('subject').value || '';
+                const resource = document.getElementById('resource').value || '';
+                const content = document.getElementById('content').value || '';
+                const completedLessons = document.getElementById('completedLessons').value || '';
+                const reviewCount = document.getElementById('reviewCount').value || '';
+                const flash_gmt1 = document.getElementById('flash_gmt1').value || '0';
+                const flash_gmt2 = document.getElementById('flash_gmt2').value || '0';
+                const flash_ot1 = document.getElementById('flash_ot1').value || '0';
+                const flash_ot2 = document.getElementById('flash_ot2').value || '0';
+                const flash_ot3 = document.getElementById('flash_ot3').value || '0';
+                const flash_ot4 = document.getElementById('flash_ot4').value || '0';
+                const flash_ot5 = document.getElementById('flash_ot5').value || '0';
+                const gmetrix_gmt1 = document.getElementById('gmetrix_gmt1').value || '0';
+                const gmetrix_gmt2 = document.getElementById('gmetrix_gmt2').value || '0';
+        
+                const report = `BÁO CÁO CHUYÊN MÔN
+        - Tên Giáo Viên: ${teacherName}
+        - Lớp: ${classNameVal}
+        - Môn: ${subject}
+        - Tài liệu dạy: ${resource}
+        - Nội dung dạy: ${content}
+        - Số tiết đã dạy: ${completedLessons}
+        - Số lần hoàn thành bài tổng hợp: ${reviewCount}
+        - Tỷ lệ kết quả Flash: GMT 1 (${flash_gmt1}%) GMT 2 (${flash_gmt2}%) OT 1 (${flash_ot1}%) OT 2 (${flash_ot2}%) OT 3 (${flash_ot3}%) OT 4 (${flash_ot4}%) OT 5 (${flash_ot5}%)
+        - Tỷ lệ kết quả điểm Gmetrix: GMT 1 (${gmetrix_gmt1}%) GMT 2 (${gmetrix_gmt2}%)`;
+        
+                reportOutputModal2.textContent = report;
+                modal2.style.display = 'flex';
+                copySuccessModal2.style.display = 'none';
+        
+                // Lưu vào cookie
+                const data = {
+                    teacherName2: teacherName,
+                    className: classNameVal,
+                    subject: subject,
+                    resource: resource,
+                    content: content,
+                    completedLessons: completedLessons,
+                    reviewCount: reviewCount,
+                    flash_gmt1: flash_gmt1,
+                    flash_gmt2: flash_gmt2,
+                    flash_ot1: flash_ot1,
+                    flash_ot2: flash_ot2,
+                    flash_ot3: flash_ot3,
+                    flash_ot4: flash_ot4,
+                    flash_ot5: flash_ot5,
+                    gmetrix_gmt1: gmetrix_gmt1,
+                    gmetrix_gmt2: gmetrix_gmt2
+                };
+                setCookie(`${teacherName}_${classNameVal}`, JSON.stringify(data), 30);
+            });
+        
+            closeModal2.addEventListener('click', () => modal2.style.display = 'none');
+            modal2.addEventListener('click', (event) => { if (event.target === modal2) modal2.style.display = 'none'; });
+            copyBtn2.addEventListener('click', () => copyToClipboard(reportOutputModal2.textContent, copySuccessModal2));
+        
+            // Tab 3: Báo Cáo Cuối Buổi Dạy
+            const exportBtn3 = document.getElementById('exportBtn3');
+            const modal3 = document.getElementById('reportModal3');
+            const reportOutputModal3 = document.getElementById('reportOutputModal3');
+            const closeModal3 = document.getElementById('closeModal3');
+            const copyBtn3 = document.getElementById('copyReport3');
+            const copySuccessModal3 = document.getElementById('copySuccessModal3');
+            const teacherName3 = document.getElementById('teacherName3');
+        
+            teacherName3.addEventListener('input', () => autofillFromCookie(teacherName3, null, 'reportForm3'));
+        
+            exportBtn3.addEventListener('click', function() {
+                const teacherName = teacherName3.value || '';
+                const assistantName = document.getElementById('assistantName3').value || '';
+                const roomNumber = document.getElementById('roomNumber3').value || '';
+                const totalComputers = document.getElementById('totalComputers3').value || '';
+                const studentCount = document.getElementById('studentCount').value || '';
+                const materialPercentage = document.getElementById('materialPercentage').value || '0';
+                const errorComputers = document.getElementById('errorComputers3').value || '';
+                const missingComputers = document.getElementById('missingComputers3').value || '';
+                const netsupport = document.getElementById('netsupport3').value || '';
+                const soundSystem = document.getElementById('soundSystem3').value || '';
+                const airConditioner = document.getElementById('airConditioner3').value || '';
+                const devicesTurnedOff = document.getElementById('devicesTurnedOff').value || '';
+                const chairsArranged = document.getElementById('chairsArranged').value || '';
+                const roomCleaned = document.getElementById('roomCleaned').value || '';
+                const compliance = document.getElementById('compliance').value || '';
+                const violations = document.getElementById('violations').value || '';
+        
+                const report = `BÁO CÁO CUỐI BUỔI DẠY
+        - Tên Giáo Viên: ${teacherName}
+        - Tên Trợ Giảng: ${assistantName}
+        - Phòng Máy: ${roomNumber}
+        - Tổng số máy: ${totalComputers}
+        - Số lượng HS: ${studentCount}
+        - Tỷ lệ học sinh có tài liệu: ${materialPercentage}%
+        - Tổng số máy bị lỗi: ${errorComputers}
+        - Số máy còn thiếu cho HS: ${missingComputers}
+        - Tình trạng Netsupport: ${netsupport}
+        - Tình trạng Loa, Âm ly: ${soundSystem}
+        - Tình trạng máy lạnh, máy quạt: ${airConditioner}
+        - Đã tắt các thiết bị điện chưa: ${devicesTurnedOff}
+        - HS sắp xếp ghế ngồi gọn gàng: ${chairsArranged}
+        - HS vệ sinh phòng máy: ${roomCleaned}
+        - Tuân thủ nội quy của HS: ${compliance}
+        - Danh sách vi phạm: ${violations}`;
+        
+                reportOutputModal3.textContent = report;
+                modal3.style.display = 'flex';
+                copySuccessModal3.style.display = 'none';
+        
+                // Lưu vào cookie
+                const data = {
+                    teacherName3: teacherName,
+                    assistantName3: assistantName,
+                    roomNumber3: roomNumber,
+                    totalComputers3: totalComputers,
+                    studentCount: studentCount,
+                    materialPercentage: materialPercentage,
+                    errorComputers3: errorComputers,
+                    missingComputers3: missingComputers,
+                    netsupport3: netsupport,
+                    soundSystem3: soundSystem,
+                    airConditioner3: airConditioner,
+                    devicesTurnedOff: devicesTurnedOff,
+                    chairsArranged: chairsArranged,
+                    roomCleaned: roomCleaned,
+                    compliance: compliance,
+                    violations: violations
+                };
+                setCookie(teacherName, JSON.stringify(data), 30);
+            });
+        
+            closeModal3.addEventListener('click', () => modal3.style.display = 'none');
+            modal3.addEventListener('click', (event) => { if (event.target === modal3) modal3.style.display = 'none'; });
+            copyBtn3.addEventListener('click', () => copyToClipboard(reportOutputModal3.textContent, copySuccessModal3));
+        });
+        </script>
+        
 <footer class="footer">
     <p>Design by: Nguyễn Bá Duy</p>
 </footer>   
