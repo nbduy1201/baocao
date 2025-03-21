@@ -748,7 +748,7 @@
                     soundSystem1: soundSystem,
                     airConditioner1: airConditioner
                 };
-                setCookie(teacherName, JSON.stringify(data), 30); // Lưu 30 ngày
+                setCookie(teacherName, JSON.stringify(data), 180); // Lưu 30 ngày
             });
         
             closeModal1.addEventListener('click', () => modal1.style.display = 'none');
@@ -821,7 +821,7 @@
                     gmetrix_gmt1: gmetrix_gmt1,
                     gmetrix_gmt2: gmetrix_gmt2
                 };
-                setCookie(`${teacherName}_${classNameVal}`, JSON.stringify(data), 30);
+                setCookie(`${teacherName}_${classNameVal}`, JSON.stringify(data), 180);
             });
         
             closeModal2.addEventListener('click', () => modal2.style.display = 'none');
